@@ -1,4 +1,4 @@
-import { Subscription, SubscribeMethod, VoidSubscribeMethod } from 'suub';
+import { Subscription } from 'suub';
 
 export interface OnCallback {
   (arg: any): void;
@@ -64,7 +64,11 @@ export class ResilientWebSocket<T> {
     ERROR: this.subs.ERROR.subscribe,
   } as const;
 
-  constructor(url: string, options: ResilientWebSocketOptions = {}, wsFactory: WebSocketFactory = DEFAULT_WS_FACTORY) {
+  constructor(
+    url: string,
+    options: ResilientWebSocketOptions = {},
+    wsFactory: WebSocketFactory = DEFAULT_WS_FACTORY
+  ) {
     this.wsFactory = wsFactory;
     this.url = url;
     this.options = {
