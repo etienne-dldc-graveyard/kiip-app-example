@@ -3,17 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-// import { ResilientWebSocket } from './kiip/ResilientWebsocket';
-
-// const socket = new ResilientWebSocket('ws://localhost:3020', { autoConnect: false });
-
-// socket.on.CONNECTED(() => {
-//   console.log('connected');
-// });
-
-// socket.on.MESSAGE((msg) => {
-//   console.log(msg);
-// });
 
 ReactDOM.render(
   <React.StrictMode>
