@@ -1,5 +1,6 @@
 dependencies:
   '@kiip/core': 'link:../../../../.nvm/versions/node/v14.10.0/pnpm-global/node_modules/@kiip/core'
+  '@kiip/server-types': 'link:../../../../.nvm/versions/node/v14.10.0/pnpm-global/node_modules/@kiip/server-types'
   '@testing-library/dom': 7.26.4
   '@testing-library/jest-dom': 5.11.5
   '@testing-library/react': 11.1.1_react-dom@17.0.1+react@17.0.1
@@ -12,6 +13,7 @@ dependencies:
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-scripts: 4.0.0_typescript@4.0.5
+  stachine: 1.0.0-0
   suub: 3.1.0
   typescript: 4.0.5
   web-vitals: 0.2.4
@@ -10777,6 +10779,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
+  /stachine/1.0.0-0:
+    dependencies:
+      suub: 3.1.1
+    dev: false
+    requiresBuild: true
+    resolution:
+      integrity: sha512-FDf1dacHffCEl1TY8c5HG3p8HOQtELLffQD//DGSfzUXuU6EL7LUhn+EGsY3VI17DkWh8wMchPNSpRraRWnM2g==
   /stack-utils/2.0.2:
     dependencies:
       escape-string-regexp: 2.0.0
@@ -11054,6 +11063,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-eul4xrqVaCKk1C9QlTmBdIvBS0qQxozyxCv414KGxDyci88gmL5Tp5zsZ+zQVwEefnyrT5Iu1w4Kqb5VZArlqw==
+  /suub/3.1.1:
+    dev: false
+    requiresBuild: true
+    resolution:
+      integrity: sha512-2sBb9SAvbVXOB3pcO1qjpdZG90U5EZWY+fdG184CHh1PKUpOnaE9TWYUOHHnIlERsLUgRDygG0SLDStmwBhWAg==
   /svg-parser/2.0.4:
     dev: false
     resolution:
@@ -12292,6 +12306,7 @@ packages:
       integrity: sha512-aePbxDmcYW++PaqBsJ+HYUFwCdv4LVvdnhBy78E57PIor8/OVvhMrADFFEDh8DHDFRv/O9i3lPhsENjO7QX0+A==
 specifiers:
   '@kiip/core': 2.0.0-alpha.4
+  '@kiip/server-types': 2.0.0-alpha.4
   '@testing-library/dom': ^7.26.4
   '@testing-library/jest-dom': ^5.11.5
   '@testing-library/react': ^11.1.1
@@ -12304,6 +12319,7 @@ specifiers:
   react: ^17.0.1
   react-dom: ^17.0.1
   react-scripts: 4.0.0
+  stachine: ^1.0.0-0
   suub: ^3.1.0
   typescript: ^4.0.5
   web-vitals: ^0.2.4

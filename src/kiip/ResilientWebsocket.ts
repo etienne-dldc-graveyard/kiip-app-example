@@ -5,6 +5,7 @@ export interface OnCallback {
 }
 
 export interface ResilientWebSocketOptions {
+  // stringify/parse message, invalid json messages are ignored
   autoJsonify?: boolean;
   autoConnect?: boolean;
   reconnectInterval?: number;
@@ -49,7 +50,7 @@ export class ResilientWebSocket<T> {
   private readonly stateSub = Subscription<WebSocketState>() as Subscription<WebSocketState>;
   private readonly subs = {
     CONNECTED: Subscription(),
-    MESSAGE: Subscription<T>() as Subscription<T>,
+    MESSAGE: Subscription<unknown>() as Subscription<unknown>,
     CONNECTING: Subscription(),
     CLOSE: Subscription() as Subscription<CloseEvent | undefined>,
     ERROR: Subscription(),
@@ -90,9 +91,7 @@ export class ResilientWebSocket<T> {
       return this.socket;
     }
     this.socket = this.wsFactory(this.url);
-
-    this._state = WebSocketState.Connecting;
-    this.stateSub.emit(this._state);
+    this.setState(WebSocketState.Connecting);
     this.subs.CONNECTING.emit();
     this.socket.addEventListener('open', this.onOpen);
     this.socket.addEventListener('message', this.onMessage);
@@ -102,10 +101,27 @@ export class ResilientWebSocket<T> {
     return this.socket;
   }
 
-  send(data: any) {
-    if (this.socket) {
-      this.socket.send(this.options.autoJsonify ? JSON.stringify(data) : data);
+  send(data: T) {
+    if (!this.socket) {
+      // should we trhow here ?
+      return;
     }
+    if (!this.options.autoJsonify) {
+      this.socket.send(data as any);
+      return;
+    }
+    const jsonMessage = (() => {
+      try {
+        return JSON.stringify(data);
+      } catch {
+        return null;
+      }
+    })();
+    if (jsonMessage === null) {
+      // throw invalid json ?
+      return;
+    }
+    this.socket.send(jsonMessage);
   }
 
   close() {
@@ -127,20 +143,32 @@ export class ResilientWebSocket<T> {
   }
 
   private onOpen = () => {
-    this._state = WebSocketState.Connected;
+    this.setState(WebSocketState.Connected);
     this.subs.CONNECTED.emit();
-    this.stateSub.emit(this._state);
   };
 
   private onMessage = (event: MessageEvent) => {
-    const message: T = this.options.autoJsonify ? JSON.parse(event.data) : event.data;
-    this.subs.MESSAGE.emit(message);
+    if (!this.options.autoJsonify) {
+      this.subs.MESSAGE.emit(event.data);
+      return;
+    }
+    const jsonMessage = (() => {
+      try {
+        return JSON.parse(event.data);
+      } catch {
+        return undefined;
+      }
+    })();
+    if (jsonMessage === undefined) {
+      // throw invalid json ?
+      return;
+    }
+    this.subs.MESSAGE.emit(jsonMessage);
   };
 
   private onClose = (event?: CloseEvent) => {
     this.cleanup();
-    this._state = WebSocketState.Void;
-    this.stateSub.emit(this._state);
+    this.setState(WebSocketState.Void);
     this.subs.CLOSE.emit(event);
     setTimeout(() => {
       this.socket = this.connect();
@@ -148,11 +176,18 @@ export class ResilientWebSocket<T> {
   };
 
   private onError = () => {
-    this._state = WebSocketState.Void;
-    this.stateSub.emit(this._state);
+    this.setState(WebSocketState.Void);
     this.subs.ERROR.emit();
     if (this.options.reconnectOnError) {
       this.onClose();
     }
   };
+
+  private setState(nextState: WebSocketState) {
+    if (this._state === nextState) {
+      return;
+    }
+    this._state = nextState;
+    this.stateSub.emit(this._state);
+  }
 }
