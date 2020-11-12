@@ -1,6 +1,11 @@
 import { ResilientWebSocket, WebSocketState } from './ResilientWebsocket';
-import { Subscription } from 'suub';
-import { UpMessage } from '@kiip/server-types';
+import { SubscribeMethod } from 'suub';
+import { DownMessage, UpMessage } from '@kiip/server-types';
+import {
+  createMainMachine,
+  MainMachine,
+  States as MainMachineStates,
+} from '../machines/MainMachine';
 
 export type Documents = Array<{ id: string; title: string; access: Access }>;
 
@@ -12,62 +17,45 @@ export type Document = {
   access: { [email: string]: Access };
 };
 
-type ClientState = { type: 'Void' } | { type: 'Connected' };
-
-class ClientStateManager {
-  private stateSub = Subscription<ClientState>();
-  private internalState: ClientState = { type: 'Void' };
-
-  onStateChange = this.stateSub.subscribe;
-  set(state: ClientState) {
-    this.internalState = state;
-    this.stateSub.emit(this.internalState);
-  }
-
-  get state() {
-    return this.internalState;
-  }
-}
-
 export class KiipServerClient {
-  private socket: ResilientWebSocket<UpMessage>;
-  private _state: ClientStateManager = new ClientStateManager();
+  private socket: ResilientWebSocket<UpMessage, DownMessage>;
+  private machine: MainMachine;
 
-  onStateChange = this._state.onStateChange;
+  subscribe: SubscribeMethod<MainMachineStates>;
+  getState: () => MainMachineStates;
 
   constructor(url: string) {
-    this.socket = new ResilientWebSocket<UpMessage>(url, {
+    this.socket = new ResilientWebSocket<UpMessage, DownMessage>(url, {
       autoConnect: true,
       autoJsonify: true,
       reconnectInterval: 3000,
     });
     this.socket.onState(this.handleSocketStateChange);
-  }
 
-  get state() {
-    return this._state.state;
+    this.machine = createMainMachine();
+
+    this.subscribe = this.machine.subscribe;
+    this.getState = this.machine.getState;
   }
 
   private handleSocketStateChange = (state: WebSocketState) => {
     console.log(state);
     if (state === WebSocketState.Void) {
-      this._state.set({ type: 'Void' });
+      this.machine.emit({ type: 'Disconnected' });
       return;
     }
     if (state === WebSocketState.Connecting) {
+      this.machine.emit({ type: 'Connecting' });
       return;
     }
     if (state === WebSocketState.Connected) {
-      this._state.set({ type: 'Connected' });
+      this.machine.emit({ type: 'Connected', socket: this.socket });
       return;
     }
   };
 
   login(email: string) {
-    if (this._state.state.type === 'Void') {
-      return;
-    }
-    this.socket.send({ type: 'RequestLoginMail', email, requestId: '12345' });
+    this.machine.emit({ type: 'ConnectedMachine', event: { type: 'RequestLoginMail', email } });
   }
 }
 

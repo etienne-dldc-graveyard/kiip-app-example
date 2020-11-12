@@ -1,4 +1,5 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDynamicStore, useStore } from './hooks/useStore';
 import { KiipServerClient } from './kiip/KiipServerClient';
 
 type Props = {
@@ -6,18 +7,17 @@ type Props = {
 };
 
 export function Connected({ client }: Props) {
-  const [state, setState] = useState(client.state);
   const [email, setEmail] = useState('e.deladonchamps@gmail.com');
 
-  useLayoutEffect(() => {
-    return client.onStateChange(setState);
-  }, [client]);
+  const state = useStore(client);
+
+  const connectedState = useDynamicStore(state.type === 'Connected' ? state.machine : null);
 
   return (
     <div>
-      <pre>{JSON.stringify(state, null, 2)}</pre>
       {state.type === 'Connected' && (
         <div>
+          <pre>{JSON.stringify(connectedState, null, 2)}</pre>
           <input value={email} onChange={(e) => setEmail(e.target.value)} />
           <button
             onClick={() => {

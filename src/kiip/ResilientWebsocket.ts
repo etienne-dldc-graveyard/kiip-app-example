@@ -10,13 +10,17 @@ export interface ResilientWebSocketOptions {
   autoConnect?: boolean;
   reconnectInterval?: number;
   reconnectOnError?: boolean;
+  wsFactory?: WebSocketFactory;
 }
+
+const DEFAULT_WS_FACTORY: WebSocketFactory = (url: string) => new WebSocket(url);
 
 export const DEFAULT_OPTIONS: Required<ResilientWebSocketOptions> = {
   autoJsonify: false,
   autoConnect: true,
   reconnectInterval: 1000,
   reconnectOnError: true,
+  wsFactory: DEFAULT_WS_FACTORY,
 };
 
 export enum WebSocketEvent {
@@ -37,20 +41,17 @@ export interface WebSocketFactory {
   (url: string): WebSocket;
 }
 
-const DEFAULT_WS_FACTORY: WebSocketFactory = (url: string) => new WebSocket(url);
-
-export class ResilientWebSocket<T> {
+export class ResilientWebSocket<UpMessage, DownMessage> {
   private socket: WebSocket | null = null;
   private _state: WebSocketState = WebSocketState.Void;
 
-  private readonly wsFactory: WebSocketFactory;
   private readonly url: string;
   private readonly options: Required<ResilientWebSocketOptions>;
 
   private readonly stateSub = Subscription<WebSocketState>() as Subscription<WebSocketState>;
   private readonly subs = {
     CONNECTED: Subscription(),
-    MESSAGE: Subscription<unknown>() as Subscription<unknown>,
+    MESSAGE: Subscription<DownMessage>() as Subscription<DownMessage>,
     CONNECTING: Subscription(),
     CLOSE: Subscription() as Subscription<CloseEvent | undefined>,
     ERROR: Subscription(),
@@ -65,12 +66,7 @@ export class ResilientWebSocket<T> {
     ERROR: this.subs.ERROR.subscribe,
   } as const;
 
-  constructor(
-    url: string,
-    options: ResilientWebSocketOptions = {},
-    wsFactory: WebSocketFactory = DEFAULT_WS_FACTORY
-  ) {
-    this.wsFactory = wsFactory;
+  constructor(url: string, options: ResilientWebSocketOptions = {}) {
     this.url = url;
     this.options = {
       ...DEFAULT_OPTIONS,
@@ -90,7 +86,7 @@ export class ResilientWebSocket<T> {
     if (this.socket) {
       return this.socket;
     }
-    this.socket = this.wsFactory(this.url);
+    this.socket = this.options.wsFactory(this.url);
     this.setState(WebSocketState.Connecting);
     this.subs.CONNECTING.emit();
     this.socket.addEventListener('open', this.onOpen);
@@ -101,7 +97,7 @@ export class ResilientWebSocket<T> {
     return this.socket;
   }
 
-  send(data: T) {
+  send(data: UpMessage) {
     if (!this.socket) {
       // should we trhow here ?
       return;

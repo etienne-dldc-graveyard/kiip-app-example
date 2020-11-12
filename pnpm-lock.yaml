@@ -13,7 +13,7 @@ dependencies:
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-scripts: 4.0.0_typescript@4.0.5
-  stachine: 1.0.0-0
+  stachine: 1.0.0-6
   suub: 3.1.0
   typescript: 4.0.5
   web-vitals: 0.2.4
@@ -7660,6 +7660,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-y7FpHSbMUMoyPbYUSzO6PaZ6FyRnQOpHuKwbo1G+Knck95XVU4QAiKdGEnj5wwoS7PlOgthX/09u5iFJ+aYf5Q==
+  /miid/4.0.0-0:
+    dev: false
+    resolution:
+      integrity: sha512-qgsiXJ1EgxmREg8JCqZXdUYWWOghaK+bCLmbAA3deZ8nEr7UtU7OlD/ZzB+hi51XfF0N98SfxCeQ4Y596mvANA==
   /miller-rabin/4.0.1:
     dependencies:
       bn.js: 4.11.9
@@ -10779,13 +10783,14 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
-  /stachine/1.0.0-0:
+  /stachine/1.0.0-6:
     dependencies:
-      suub: 3.1.1
+      miid: 4.0.0-0
+      suub: 3.1.2
     dev: false
     requiresBuild: true
     resolution:
-      integrity: sha512-FDf1dacHffCEl1TY8c5HG3p8HOQtELLffQD//DGSfzUXuU6EL7LUhn+EGsY3VI17DkWh8wMchPNSpRraRWnM2g==
+      integrity: sha512-kBEPT1utYihELfRHkVZFcJoBuId/nTo8b2sn+G40e6xGvhXNwPo4EesgFPl37cWWgqbj/HCtX9HuMWWUC9vb9A==
   /stack-utils/2.0.2:
     dependencies:
       escape-string-regexp: 2.0.0
@@ -11063,11 +11068,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-eul4xrqVaCKk1C9QlTmBdIvBS0qQxozyxCv414KGxDyci88gmL5Tp5zsZ+zQVwEefnyrT5Iu1w4Kqb5VZArlqw==
-  /suub/3.1.1:
+  /suub/3.1.2:
     dev: false
     requiresBuild: true
     resolution:
-      integrity: sha512-2sBb9SAvbVXOB3pcO1qjpdZG90U5EZWY+fdG184CHh1PKUpOnaE9TWYUOHHnIlERsLUgRDygG0SLDStmwBhWAg==
+      integrity: sha512-oR2ZI1F5j5r59M1yDWQEQTK/uIlkC3z9L7j6JX68KE0Ugrfa03EoNvzKnoq9msx8xrAEppCpOzr26dsDuIDrVw==
   /svg-parser/2.0.4:
     dev: false
     resolution:
@@ -12319,7 +12324,7 @@ specifiers:
   react: ^17.0.1
   react-dom: ^17.0.1
   react-scripts: 4.0.0
-  stachine: ^1.0.0-0
+  stachine: ^1.0.0-6
   suub: ^3.1.0
   typescript: ^4.0.5
   web-vitals: ^0.2.4
