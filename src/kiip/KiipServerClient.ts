@@ -57,6 +57,10 @@ export class KiipServerClient {
   login(email: string) {
     this.machine.emit({ type: 'ConnectedMachine', event: { type: 'RequestLoginMail', email } });
   }
+
+  sendLoginCode(code: string) {
+    this.machine.emit({ type: 'ConnectedMachine', event: { type: 'SendLoginCode', code } });
+  }
 }
 
 // export class KiipServerClient {

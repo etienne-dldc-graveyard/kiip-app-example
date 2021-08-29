@@ -23,6 +23,7 @@ export function useDynamicStore<T>(store: Store<T> | null): T | null {
     if (!store) {
       return;
     }
+    setState(store.getState());
     return store.subscribe(setState);
   }, [store]);
 
